@@ -98,14 +98,52 @@ END
         }
     }
 
-    function removeComponent(parts) {
+    function isComponentNeeded(name) {
+        let ret = false;
+        let component = components[name];
+        if (component) {
+            let parents = component.parents;
+            for (let i = 0; i < parents.length; i++) {
+                let index = installedComponents.indexOf(parents[i]);
+                if (index !== -1) {
+                    ret = true;
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+
+    function removeComponent(name) {
+        let index = installedComponents.indexOf(name);
+        if (index !== -1) {
+            removeElementInList(installedComponents, index);
+            console.log(`\tRemoving ${name}`);
+        }
+    }
+
+    function removeComponentAndDependencies(name) {
+        removeComponent(name);
+        let component = components[name];
+        if (component) {
+            let children = component.children;
+            children.forEach(c => {
+                if (!isComponentNeeded(c)) {
+                    removeComponent(c);
+                }
+            });
+        }
+    }
+
+    function removeCommandHandler(parts) {
         let name = getFirstComponentNameFromInput(parts);
         let index = installedComponents.indexOf(name);
         if (index === -1) {
             console.log(`\t${name} is not installed.`);
+        } else if (isComponentNeeded(name)) {
+            console.log(`\t${name} is still needed.`);
         } else {
-            removeElementInList(installedComponents, index);
-            console.log(`\tRemoving ${name}`);
+            removeComponentAndDependencies(name);
         }
     }
 
@@ -127,7 +165,7 @@ END
                 installComponent(parts);
                 break;
             case "REMOVE":
-                removeComponent(parts);
+                removeCommandHandler(parts);
                 break;
             default:
                 console.warn(`stray ${command}`);
