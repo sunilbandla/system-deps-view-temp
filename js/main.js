@@ -37,7 +37,6 @@ END
         lineIndex++;
     }
     console.log(inputLines[lineIndex]);
-    console.log(components);
 
     function addComponent(name, children, parents) {
         if (components[name]) {
@@ -88,7 +87,7 @@ END
         console.log(`\tInstalling ${name}`);
     }
 
-    function installComponent(parts) {
+    function installCommandHandler(parts) {
         let name = getFirstComponentNameFromInput(parts);
         let index = installedComponents.indexOf(name);
         if (index !== -1) {
@@ -162,7 +161,7 @@ END
                 listComponents();
                 break;
             case "INSTALL":
-                installComponent(parts);
+                installCommandHandler(parts);
                 break;
             case "REMOVE":
                 removeCommandHandler(parts);
