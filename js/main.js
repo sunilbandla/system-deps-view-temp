@@ -74,14 +74,27 @@ END
         installedComponents.forEach(c => console.log(`\t${c}`));
     }
 
+    function installComponentAndDependencies(name) {
+        let component = components[name];
+        if (component) {
+            component.children.forEach(c => {
+                let index = installedComponents.indexOf(c);
+                if (index === -1) {
+                    installComponentAndDependencies(c);
+                }
+            })
+        }
+        installedComponents.push(name);
+        console.log(`\tInstalling ${name}`);
+    }
+
     function installComponent(parts) {
         let name = getFirstComponentNameFromInput(parts);
         let index = installedComponents.indexOf(name);
         if (index !== -1) {
             console.log(`\t${name} is already installed.`);
         } else {
-            installedComponents.push(name);
-            console.log(`\tInstalling ${name}`);
+            installComponentAndDependencies(name);
         }
     }
 
